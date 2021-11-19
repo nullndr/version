@@ -32,10 +32,8 @@ main() {
   if [ $? -eq 127 ]; then
     echo "$0: command not found: $1"
   else
-    
-    echo "$1 --version | read output"
-    $1 --version | read output
-    echo $output    
+   
+    $1 --version | read output    
 
  
     if [ $? -ne 0 ]; then
