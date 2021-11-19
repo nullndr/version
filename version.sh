@@ -1,50 +1,54 @@
-
-#!/usr/bin/env sh
-# author: Andrea Foletto @nullndr
+#!/usr/bin/env bash
+# author: @nullndr
 
 set -o pipefail
 set -u
 
 usage() {
-  echo "Usage: $0 [command]"
+  echo "Usage: version [[command] [options]]"
+  echo "where Options:"
+  echo -e "\t--version: print software's version"
+  echo -e "\t--help, -h: print this page"
 }
 
 print_version() {
-  echo "$0 v0.1"
+  echo "version v0.1"
   echo "This is a free software; There is NO warranty."
   echo "See the source for more."
 }
 
 main() {
-  
-  if [[ $# -eq 0 || $# -gt 1 ]]; then
-    usage $@
+
+  if [[ $# -lt 1 || $# -gt 2 || $1 == "--help" || $1 == "-h" ]]; then
+    usage
     exit 1
   fi
 
   if [[ $1 == "--version" ]]; then
-    print_version $0
+    print_version
     exit 0
   fi
-  
-  $1 > /dev/null 2>&1
 
-  if [ $? -eq 127 ]; then
+  if [[ "$(which $1 > /dev/null 2>&1)" -ne 0 ]]; then
     echo "$0: command not found: $1"
   else
-   
-    $1 --version | read output    
 
- 
-    if [ $? -ne 0 ]; then
-      echo "Command $1 does not have a '--version' flag"
-      exit 0
-    fi
+		first_flag=1
+    if $1 --version > /dev/null 2> /dev/null; then first_flag=0; fi
 
-    echo $output
+    second_flag=1
+    if $1 -version > /dev/null 2> /dev/null; then second_flag=0; fi
+
+    if [[ $first_flag -eq 0 ]] && [[ $second_flag -eq 0 ]]; then
+    	echo "Command $1 does not have a --version or -version flag :("
+    	exit 0
+  	fi
+
+    if [[ $first_flag -eq 0 ]]; then $1 --version; exit 0; fi
+    if [[ $second_flag -eq 0 ]]; then $1 -version; exit 0; fi
   fi
   
   exit 0
 }
 
-main $@
+main "$@"
