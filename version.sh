@@ -29,8 +29,8 @@ main() {
     exit 0
   fi
 
-  if [[ "$(which $1 > /dev/null 2>&1)" -ne 0 ]]; then
-    echo "$0: command not found: $1"
+  if ! which "$1" > /dev/null 2> /dev/null ; then
+    echo "version: command not found: $1"
   else
 
 		first_flag=1
